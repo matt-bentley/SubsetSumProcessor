@@ -1,0 +1,9 @@
+C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\bin\Debug\netcoreapp1.1\SubsetSumCore.deps.json
+C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\bin\Debug\netcoreapp1.1\SubsetSumCore.runtimeconfig.json
+C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\bin\Debug\netcoreapp1.1\SubsetSumCore.runtimeconfig.dev.json
+C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\bin\Debug\netcoreapp1.1\SubsetSumCore.dll
+C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\bin\Debug\netcoreapp1.1\SubsetSumCore.pdb
+C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Debug\netcoreapp1.1\SubsetSumCore.csprojResolveAssemblyReference.cache
+C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Debug\netcoreapp1.1\SubsetSumCore.AssemblyInfo.cs
+C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Debug\netcoreapp1.1\SubsetSumCore.dll
+C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Debug\netcoreapp1.1\SubsetSumCore.pdb
