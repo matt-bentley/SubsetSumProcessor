@@ -6,3 +6,4 @@ C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\bin\Release\netcorea
 C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Release\netcoreapp1.1\SubsetSumCore.AssemblyInfo.cs
 C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Release\netcoreapp1.1\SubsetSumCore.dll
 C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Release\netcoreapp1.1\SubsetSumCore.pdb
+C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Release\netcoreapp1.1\SubsetSumCore.csprojResolveAssemblyReference.cache

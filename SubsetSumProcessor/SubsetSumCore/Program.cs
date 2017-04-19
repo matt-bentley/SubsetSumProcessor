@@ -16,26 +16,52 @@ namespace SubsetSumCore
 
             Stopwatch timer = new Stopwatch();
             timer.Start();
-
-            var subset = FindDynamic(inputs);
+            FindSubsetRecursive(inputs);
+            var subset = FindSubsetRecursive(inputs);
             var isSubset = subset != null;
 
             timer.Stop();
-            var runTime = timer.Elapsed;         
+            var runTime = timer.Elapsed;
 
-            Console.WriteLine($"Match: {isSubset} in {runTime.Seconds.ToString()}secs {runTime.Milliseconds}ms");
-            Console.Write("[");
-            for(int i = 0; i < subset.Length; i ++)
+            Console.WriteLine($"Match recursive: {isSubset} in {runTime.Seconds.ToString()}secs {runTime.Milliseconds}ms");
+            if (isSubset)
             {
-                Console.Write(subset[i].ToString());
-                if (i + 1 != subset.Length)
-                    Console.Write(",");
+                Console.Write("[");
+                for (int i = 0; i < subset.Length; i++)
+                {
+                    Console.Write(subset[i].ToString());
+                    if (i + 1 != subset.Length)
+                        Console.Write(",");
+                }
+                Console.Write("]");
             }
-            Console.Write("]");
+            Console.WriteLine("");
+
+            timer.Reset();
+            timer.Start();
+            FindSubsetRecursive(inputs);
+            subset = FindSubsetDynamic(inputs);
+            isSubset = subset != null;
+
+            timer.Stop();
+            runTime = timer.Elapsed;         
+
+            Console.WriteLine($"Match dynamic: {isSubset} in {runTime.Seconds.ToString()}secs {runTime.Milliseconds}ms");
+            if (isSubset)
+            {
+                Console.Write("[");
+                for (int i = subset.Length - 1; i >= 0; i--)
+                {
+                    Console.Write(subset[i].ToString());
+                    if (i + 1 != subset.Length)
+                        Console.Write(",");
+                }
+                Console.Write("]");
+            }
             Console.ReadKey();
         }
 
-        private static decimal[] FindDynamic(decimal[] doubles)
+        private static decimal[] FindSubsetDynamic(decimal[] doubles)
         {
             int[] inputs = new int[doubles.Length];
             try
@@ -47,7 +73,7 @@ namespace SubsetSumCore
                     inputs[i] = (int)(doubles[i] * 100);
                 }
 
-                int[] subset = FindDynamic(inputs);
+                int[] subset = FindSubsetDynamic(inputs);
                 decimal[] subsetDecimal = null;
                 
                 if(subset != null && subset.Length > 0)
@@ -72,7 +98,7 @@ namespace SubsetSumCore
             }
         }
 
-        private static int[] FindDynamic(int[] inputs)
+        private static int[] FindSubsetDynamic(int[] inputs)
         {
             int a = 0;
             int b = 0;
@@ -187,6 +213,58 @@ namespace SubsetSumCore
                 subset.Add(inputs[0]);
             }
             return subset;
+        }
+
+        private static decimal[] FindSubsetRecursive(decimal[] inputs)
+        {
+            bool isComplete = false;
+            string result = "";
+            result = FindRecursive(inputs, 0, 0, result, ref isComplete);
+            if(result != "")
+            {
+                string[] values = result.Split(',');
+                decimal[] subset = new decimal[values.Length];
+                for(int i = 0; i < values.Length; i++)
+                {
+                    subset[i] = inputs[Convert.ToInt32(values[i])];
+                }
+                return subset;
+            }
+            return null;
+        }
+
+        private static string FindRecursive(decimal[] inputs, int currIndex, decimal currTotal, string currResult, ref bool isComplete)
+        {
+            for(int i = currIndex; i < inputs.Length; i++)
+            {
+                if(TestSubset(currTotal, inputs[i]))
+                {
+                    string result = ExtendResult(currResult, i.ToString());
+                    isComplete = true;
+                    return result;
+                }
+                else if (currIndex < inputs.Length)
+                {
+                    string exResult = ExtendResult(currResult, i.ToString());
+                    exResult = FindRecursive(inputs, i + 1, currTotal + inputs[i], exResult, ref isComplete);
+                    if (isComplete)
+                    {
+                        return exResult;
+                    }
+                }
+            }
+            return "";
+        }
+
+        private static bool TestSubset(decimal currTotal, decimal input)
+        {
+            // Can add a tolerance here if needed
+            return currTotal + input == 0;
+        }
+
+        private static string ExtendResult(string currResult, string newVal)
+        {
+            return currResult == "" ? newVal : $"{currResult},{newVal}";
         }
     }
 }
