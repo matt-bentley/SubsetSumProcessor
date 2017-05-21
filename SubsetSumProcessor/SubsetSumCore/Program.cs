@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.Serialization;
+using System.Collections;
+using ZeroFormatter;
 
 namespace SubsetSumCore
 {
     class Program
     {
+        // Need to remove items from inputs that are greater than a or b
+
         static void Main(string[] args)
         {
             //int[] inputs = { -5, -2, -1, 3, 7 };
@@ -16,7 +22,7 @@ namespace SubsetSumCore
 
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            FindSubsetRecursive(inputs);
+
             var subset = FindSubsetRecursive(inputs);
             var isSubset = subset != null;
 
@@ -39,7 +45,8 @@ namespace SubsetSumCore
 
             timer.Reset();
             timer.Start();
-            FindSubsetRecursive(inputs);
+
+            subset = FindSubsetDynamicBits(inputs);
             subset = FindSubsetDynamic(inputs);
             isSubset = subset != null;
 
@@ -63,17 +70,18 @@ namespace SubsetSumCore
 
         private static decimal[] FindSubsetDynamic(decimal[] doubles)
         {
-            int[] inputs = new int[doubles.Length];
+            long[] inputs = new long[doubles.Length];
             try
             {
                 for (int i = 0; i < doubles.Length; i++)
                 {
                     if (Math.Round(doubles[i], 2) != doubles[i])
                         throw new InvalidCastException("Inputs must be 2 decimal places");
-                    inputs[i] = (int)(doubles[i] * 100);
+                    inputs[i] = (long)(doubles[i] * 100);
                 }
 
-                int[] subset = FindSubsetDynamic(inputs);
+                long[] subset = FindSubsetDynamic(inputs);
+                subset = FindSubsetDynamicSparse(inputs);
                 decimal[] subsetDecimal = null;
                 
                 if(subset != null && subset.Length > 0)
@@ -98,12 +106,50 @@ namespace SubsetSumCore
             }
         }
 
-        private static int[] FindSubsetDynamic(int[] inputs)
+        private static decimal[] FindSubsetDynamicBits(decimal[] doubles)
         {
-            int a = 0;
-            int b = 0;
+            int[] inputs = new int[doubles.Length];
+            try
+            {
+                for (int i = 0; i < doubles.Length; i++)
+                {
+                    if (Math.Round(doubles[i], 2) != doubles[i])
+                        throw new InvalidCastException("Inputs must be 2 decimal places");
+                    inputs[i] = (int)(doubles[i] * 100);
+                }
 
-            for(int i = 0; i < inputs.Length; i++)
+                int[] subset = FindSubsetDynamicBits(inputs);
+
+                decimal[] subsetDecimal = null;
+
+                if (subset != null && subset.Length > 0)
+                {
+                    subsetDecimal = new decimal[subset.Length];
+
+                    for (int i = 0; i < subset.Length; i++)
+                    {
+                        subsetDecimal[i] = (decimal)subset[i] / 100;
+                    }
+                }
+
+                return subsetDecimal;
+            }
+            catch (InvalidCastException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private static long[] FindSubsetDynamic(long[] inputs)
+        {
+            long a = 0;
+            long b = 0;
+
+            for(long i = 0; i < inputs.Length; i++)
             {
                 if (inputs[i] > 0)
                     b += inputs[i];
@@ -111,7 +157,7 @@ namespace SubsetSumCore
                     a += inputs[i];
             }
 
-            int s = (b - a) + 1;
+            long s = (b - a) + 1;
 
             bool[,] matrix = new bool[inputs.Length, s];
 
@@ -119,8 +165,8 @@ namespace SubsetSumCore
             //int findIndex = FillMatrixParallel(inputs, matrix, s, a);
 
             bool isSubset = matrix[findIndex, -a];
-            List<int> subset;
-            int[] subsetArray = null;
+            List<long> subset;
+            long[] subsetArray = null;
             if (isSubset)
             {
                 subset = GetSubset(inputs, matrix, a, findIndex);
@@ -132,16 +178,87 @@ namespace SubsetSumCore
             return subsetArray;
         }
 
-        private static int FillMatrix(int[] inputs, bool[,] matrix, int s, int a)
+        private static int[] FindSubsetDynamicBits(int[] inputs)
+        {
+            int a = 0;
+            int b = 0;
+
+            for (long i = 0; i < inputs.Length; i++)
+            {
+                if (inputs[i] > 0)
+                    b += inputs[i];
+                else
+                    a += inputs[i];
+            }
+
+            int s = (b - a) + 1;
+
+            BitArray[] matrix = new BitArray[inputs.Length];
+            for(int i = 0; i < inputs.Length; i++)
+            {
+                matrix[i] = new BitArray(s);
+            }
+
+            int findIndex = FillMatrixBits(inputs, matrix, s, a);
+
+            bool isSubset = matrix[findIndex][-a];
+            List<int> subset;
+            int[] subsetArray = null;
+            if (isSubset)
+            {
+                subset = GetSubsetBits(inputs, matrix, a, findIndex);
+                if (subset != null && subset.Count > 0)
+                {
+                    subsetArray = subset.ToArray();
+                }
+            }
+            return subsetArray;
+        }
+
+        private static long[] FindSubsetDynamicSparse(long[] inputs)
+        {
+            long a = 0;
+            long b = 0;
+
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                if (inputs[i] > 0)
+                    b += inputs[i];
+                else
+                    a += inputs[i];
+            }
+
+            long s = (b - a) + 1;
+
+            Dictionary<long, bool>[] matrix = new Dictionary<long, bool>[inputs.Length];
+
+            int findIndex = FillSparseMatrix(inputs, matrix, s, a);
+
+            bool isSubset = matrix[findIndex].ContainsKey(-a);
+            List<long> subset;
+            long[] subsetArray = null;
+            if (isSubset)
+            {
+                subset = GetSubsetSparse(inputs, matrix, a, findIndex);
+                if (subset != null && subset.Count > 0)
+                {
+                    subsetArray = subset.ToArray();
+                }
+            }
+
+            return subsetArray;
+        }
+
+        private static int FillMatrix(long[] inputs, bool[,] matrix, long s, long a)
         {
             int findIndex = inputs.Length - 1;
             matrix[0, inputs[0] - a] = true;
 
             for (int i = 1; i < inputs.Length; i++)
             {
-                for (int j = 0; j < s; j++)
+                for (long j = 0; j < s; j++)
                 {
-                    int check = j - inputs[i];
+                    long check = j - inputs[i];
                     if (s - 1 >= check && check >= 0)
                     {
                         if (matrix[i - 1, j] || (j + a) == inputs[i] || matrix[i - 1, check])
@@ -159,6 +276,73 @@ namespace SubsetSumCore
                     break;
                 }
             }
+            long length = s * matrix.Length * 4;
+            Console.WriteLine($"Standard Bool Array Byte length: {length}");
+            return findIndex;
+        }
+
+        private static int FillMatrixBits(int[] inputs, BitArray[] matrix, int s, int a)
+        {
+            int findIndex = inputs.Length - 1;
+            matrix[0][ inputs[0] - a] = true;
+
+            for (int i = 1; i < inputs.Length; i++)
+            {
+                for (int j = 0; j < s; j++)
+                {
+                    int check = j - inputs[i];
+                    if (s - 1 >= check && check >= 0)
+                    {
+                        if (matrix[i - 1][ j] || (j + a) == inputs[i] || matrix[i - 1][check])
+                            matrix[i][j] = true;
+                    }
+                    else
+                    {
+                        if (matrix[i - 1][j] || (j + a) == inputs[i])
+                            matrix[i][j] = true;
+                    }
+                }
+                if (matrix[i][-a])
+                {
+                    findIndex = i;
+                    break;
+                }
+            }
+            long length = (s * matrix.Length) / 8;
+            Console.WriteLine($"Bit Array Byte length: {length/1000000000}");
+            return findIndex;
+        }
+
+        private static int FillSparseMatrix(long[] inputs, Dictionary<long, bool>[] matrix, long s, long a)
+        {
+            int findIndex = inputs.Length - 1;
+            matrix[0] = new Dictionary<long, bool>();
+            matrix[0].Add(inputs[0] - a, true);
+
+            for (int i = 1; i < inputs.Length; i++)
+            {
+                matrix[i] = new Dictionary<long, bool>();
+                for (long j = 0; j < s; j++)
+                {
+                    long check = j - inputs[i];
+                    if (s - 1 >= check && check >= 0)
+                    {
+                        if (matrix[i - 1].ContainsKey(j) || (j + a) == inputs[i] || matrix[i - 1].ContainsKey(check))
+                            matrix[i].Add(j, true);
+                    }
+                    else
+                    {
+                        if (matrix[i - 1].ContainsKey(j) || (j + a) == inputs[i])
+                            matrix[i].Add(j, true);
+                    }
+                }
+                if (matrix[i].ContainsKey(-a))
+                {
+                    findIndex = i;
+                    break;
+                }
+            }
+            PrintByteLength<Dictionary<long, bool>[]>(matrix);
             return findIndex;
         }
 
@@ -194,11 +378,11 @@ namespace SubsetSumCore
             return findIndex;
         }
 
-        private static List<int> GetSubset(int[] inputs, bool[,] matrix, int a, int findIndex)
+        private static List<long> GetSubset(long[] inputs, bool[,] matrix, long a, int findIndex)
         {
-            List<int> subset = new List<int>();
+            List<long> subset = new List<long>();
             subset.Add(inputs[findIndex]);
-            int col = -a - inputs[findIndex];
+            long col = -a - inputs[findIndex];
 
             for (int i = findIndex - 1; i > 0; i--)
             {
@@ -209,6 +393,48 @@ namespace SubsetSumCore
                 }
             }
             if (matrix[0, col])
+            {
+                subset.Add(inputs[0]);
+            }
+            return subset;
+        }
+
+        private static List<int> GetSubsetBits(int[] inputs, BitArray[] matrix, int a, int findIndex)
+        {
+            List<int> subset = new List<int>();
+            subset.Add(inputs[findIndex]);
+            int col = -a - inputs[findIndex];
+
+            for (int i = findIndex - 1; i > 0; i--)
+            {
+                if (!matrix[i - 1][col])
+                {
+                    subset.Add(inputs[i]);
+                    col = col - inputs[i];
+                }
+            }
+            if (matrix[0][col])
+            {
+                subset.Add(inputs[0]);
+            }
+            return subset;
+        }
+
+        private static List<long> GetSubsetSparse(long[] inputs, Dictionary<long, bool>[] matrix, long a, int findIndex)
+        {
+            List<long> subset = new List<long>();
+            subset.Add(inputs[findIndex]);
+            long col = -a - inputs[findIndex];
+
+            for (int i = findIndex - 1; i > 0; i--)
+            {
+                if (!matrix[i - 1].ContainsKey(col))
+                {
+                    subset.Add(inputs[i]);
+                    col = col - inputs[i];
+                }
+            }
+            if (matrix[0].ContainsKey(col))
             {
                 subset.Add(inputs[0]);
             }
@@ -265,6 +491,12 @@ namespace SubsetSumCore
         private static string ExtendResult(string currResult, string newVal)
         {
             return currResult == "" ? newVal : $"{currResult},{newVal}";
+        }
+
+        private static void PrintByteLength<T>(T obj)
+        {
+            var bytes = ZeroFormatterSerializer.Serialize(obj);
+            Console.WriteLine($"Byte length: {bytes.Length}");
         }
     }
 }
