@@ -7,3 +7,12 @@ C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Debug\netcoreapp
 C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Debug\netcoreapp1.1\SubsetSumCore.AssemblyInfo.cs
 C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Debug\netcoreapp1.1\SubsetSumCore.dll
 C:\Repo\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Debug\netcoreapp1.1\SubsetSumCore.pdb
+C:\Repos\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\bin\Debug\netcoreapp1.1\SubsetSumCore.deps.json
+C:\Repos\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\bin\Debug\netcoreapp1.1\SubsetSumCore.runtimeconfig.json
+C:\Repos\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\bin\Debug\netcoreapp1.1\SubsetSumCore.runtimeconfig.dev.json
+C:\Repos\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\bin\Debug\netcoreapp1.1\SubsetSumCore.dll
+C:\Repos\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\bin\Debug\netcoreapp1.1\SubsetSumCore.pdb
+C:\Repos\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Debug\netcoreapp1.1\SubsetSumCore.csprojResolveAssemblyReference.cache
+C:\Repos\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Debug\netcoreapp1.1\SubsetSumCore.AssemblyInfo.cs
+C:\Repos\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Debug\netcoreapp1.1\SubsetSumCore.dll
+C:\Repos\SubsetSumProcessor\SubsetSumProcessor\SubsetSumCore\obj\Debug\netcoreapp1.1\SubsetSumCore.pdb
